@@ -34,21 +34,39 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
         self.speed = 5
         self.obstacle_sprites = obstacle_sprites
+        self.attacking = False
+        self.attack_cd = 200
+        self.attack_time = None
+
+    def player_stuff(self):
+        player_path = '..data/player/'
+        self.animation = {'up': [], 'down': [], 'left': [], 'right': [],
+                          'up_idle': [], 'down_idle': [], 'left_idle': [], 'right_idle': [],
+                          'up_attack': [], 'down_attack': [], 'left_attack': [], 'right_attack': []}
+
+        for animation in self.animation.keys():
+            full_path = player_path + animation
+            self.animation[animation] = import_folder(full_path)
+        print(self.animation)
 
     def update_Player(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_a]:
             self.direction.x = -1
-        elif keys[pygame.K_RIGHT]:
+        elif keys[pygame.K_d]:
             self.direction.x = 1
         else:
             self.direction.x = 0
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_w]:
             self.direction.y = -1
-        elif keys[pygame.K_DOWN]:
+        elif keys[pygame.K_s]:
             self.direction.y = 1
         else:
             self.direction.y = 0
+
+        if keys[pygame.K_SPACE] and not self.attacking:
+            self.attacking = True
+            self.attack_time = pygame.time.get_ticks()
 
     def move(self, speed):
         if self.direction.magnitude() != 0:
@@ -75,8 +93,15 @@ class Player(pygame.sprite.Sprite):
                     if self.direction.y < 0:
                         self.hitbox.top = sprite.hitbox.bottom
 
+    def cooldown(self):
+        current_time = pygame.time.get_ticks()
+        if self.attacking:
+            if current_time - self.attack_time >= self.cooldown():
+                self.attacking = False
+
     def update(self):
         self.update_Player()
+        self.cooldown()
         self.move(self.speed)
 
 
