@@ -43,10 +43,6 @@ class Player(pygame.sprite.Sprite):
         self.animation = {'up': [], 'down': [], 'left': [], 'right': [],
                           'up_idle': [], 'down_idle': [], 'left_idle': [], 'right_idle': [],
                           'up_attack': [], 'down_attack': [], 'left_attack': [], 'right_attack': []}
-
-        for animation in self.animation.keys():
-            full_path = player_path + animation
-            self.animation[animation] = import_folder(full_path)
         print(self.animation)
 
     def update_Player(self):
